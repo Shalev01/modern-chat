@@ -28,3 +28,12 @@ def connect_client(url: str) -> WebSocket:
     except Exception:
         sock.close()
         raise
+
+
+if __name__ == "__main__":
+    client = connect_client("ws://localhost:8765")
+    client.on_error = lambda e: print(e)
+    client.on_close = lambda : print("closed")
+    client.on_message = lambda data: print(data)
+    client.send_text("hello")
+    client.send_text("world")

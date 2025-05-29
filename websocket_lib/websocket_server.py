@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+from typing import Optional, Callable
 
 from websocket_lib.protocol import handshake_server
 from websocket_lib.websocket import WebSocket, WebSocketState
@@ -10,7 +11,7 @@ class WebSocketServer:
     def __init__(self, host = 'localhost', port = 8765):
         self.host = host
         self.port = port
-        self.on_connection = None
+        self.on_connection: Optional[Callable[[WebSocket], None]] = None
         self._running = False
 
     def start(self) -> None:
@@ -42,9 +43,9 @@ class WebSocketServer:
 
     def _handle_client(self, client_sock: socket.socket, addr: tuple) -> None:
         try:
-            request_data = client_sock.recv(4096)
 
-            handshake_server(client_sock, request_data)
+
+            handshake_server(client_sock)
 
             ws = WebSocket(client_sock, is_client=False)
 
@@ -60,3 +61,18 @@ class WebSocketServer:
             print(f"Error handling client {addr}: {e}")
         finally:
             client_sock.close()
+
+if __name__ == "__main__":
+
+    def on_message(data: bytes | str) -> None:
+        print(data)
+
+
+    def on_connection(ws: WebSocket) -> None:
+        print(f"Client connected")
+        ws.on_message = on_message
+
+    server = WebSocketServer()
+    server.on_connection = on_connection
+    server.start()
+

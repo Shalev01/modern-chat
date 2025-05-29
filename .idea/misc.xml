@@ -3,4 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="uv (modern-chat)" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="uv (modern-chat)" project-jdk-type="Python SDK" />
 </project>

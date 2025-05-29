@@ -75,17 +75,17 @@ class WebSocket:
             self.on_close()
 
 
-    # def send_text(self, message: str) -> None:
-    #     self._queue_frame(OpCode.TEXT, message.encode('utf-8'))
-    #
-    # def send_binary(self, data: bytes) -> None:
-    #     self._queue_frame(OpCode.BINARY, data)
-    #
-    # def send_ping(self, data: bytes = b'') -> None:
-    #     self._queue_frame(OpCode.PING, data)
-    #
-    # def send_pong(self, data: bytes = b'') -> None:
-    #     self._queue_frame(OpCode.PONG, data)
+    def send_text(self, message: str) -> None:
+        self._queue_frame(OpCode.TEXT, message.encode('utf-8'))
+
+    def send_binary(self, data: bytes) -> None:
+        self._queue_frame(OpCode.BINARY, data)
+
+    def send_ping(self, data: bytes = b'') -> None:
+        self._queue_frame(OpCode.PING, data)
+
+    def send_pong(self, data: bytes = b'') -> None:
+        self._queue_frame(OpCode.PONG, data)
 
     def _handle_receive_text(self, frame: Frame) -> None:
         if self.on_message:

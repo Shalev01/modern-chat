@@ -96,7 +96,8 @@ def handshake_client(sock: socket.socket, host: str, path: str = "/") -> None:
 
     # self.state = WebSocketState.OPEN
 
-def handshake_server(client_sock: socket.socket, request_data: bytes) -> bytes:
+def handshake_server(client_sock: socket.socket) -> None:
+    request_data = client_sock.recv(4096)
     response = _create_server_response(request_data)
     client_sock.send(response)
 
