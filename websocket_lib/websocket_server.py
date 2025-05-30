@@ -13,6 +13,7 @@ class WebSocketServer:
         self.port = port
         self.on_connection: Optional[Callable[[WebSocket], None]] = None
         self._running = False
+        self.clients: list[WebSocket] = []
 
     def start(self) -> None:
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,6 +42,13 @@ class WebSocketServer:
     def stop(self) -> None:
         self._running = False
 
+
+    # def _on_connection(self, client_socket: WebSocket) -> None:
+    #
+    #     for client in self.clients:
+    #         client.send_text("someone new entered the chat")
+
+
     def _handle_client(self, client_sock: socket.socket, addr: tuple) -> None:
         try:
 
@@ -48,6 +56,10 @@ class WebSocketServer:
             handshake_server(client_sock)
 
             ws = WebSocket(client_sock, is_client=False)
+            self.clients.append(ws)
+
+
+            # self._on_connection(ws)
 
             if self.on_connection:
                 self.on_connection(ws)
@@ -65,14 +77,16 @@ class WebSocketServer:
 if __name__ == "__main__":
 
     def on_message(data: bytes | str) -> None:
+        print(f"on_message")
         print(data)
 
 
     def on_connection(ws: WebSocket) -> None:
-        print(f"Client connected")
+        print(f"on_connection")
         ws.on_message = on_message
 
     server = WebSocketServer()
     server.on_connection = on_connection
     server.start()
 
+#TODO - debug _on_connection func + try to implement a ping system on server
