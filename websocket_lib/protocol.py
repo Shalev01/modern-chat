@@ -101,6 +101,7 @@ def handshake_server(client_sock: socket.socket) -> None:
     response = _create_server_response(request_data)
     client_sock.send(response)
 
+
 def _mask_payload(payload: bytes) -> tuple[bytes, bytes]:
     mask = os.urandom(4)
     masked = bytes(payload[i] ^ mask[i % 4] for i in range(len(payload)))

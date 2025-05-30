@@ -37,3 +37,5 @@ if __name__ == "__main__":
     client.on_message = lambda data: print(data)
     client.send_text("hello")
     client.send_text("world")
+    while True:
+        pass

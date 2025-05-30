@@ -27,9 +27,6 @@ class WebSocket:
         self._receive_thread: Optional[threading.Thread] = None
         self._send_thread: Optional[threading.Thread] = None
 
-        # self.handshake_handler = HandshakeHandler()
-
-
         self.on_message: Optional[Callable[[Union[str, bytes]], None]] = None
         self.on_close: Optional[Callable[[], None]] = None
         self.on_error: Optional[Callable[[Exception], None]] = None
@@ -53,15 +50,16 @@ class WebSocket:
         self._receive_thread.start()
         self._send_thread.start()
 
+
     def close(self, code: int = 1000, reason: str = '') -> None:
         if self.state != WebSocketState.OPEN:
             return
-
         self.state = WebSocketState.CLOSING
-        # close_data = struct.pack('!H', code) + reason.encode('utf-8')
-        # self._queue_frame(OpCode.CLOSE, close_data)
 
-        # self.connection_manager.stop()
+        close_data = struct.pack('!H', code) + reason.encode('utf-8')
+        self.send_queue.put((OpCode.CLOSE, close_data))
+
+        self.running = False
 
         if self._receive_thread and self._receive_thread.is_alive():
             self._receive_thread.join(timeout=5.0)
@@ -69,7 +67,7 @@ class WebSocket:
             self._send_thread.join(timeout=5.0)
 
         self.sock.close()
-        self.state = WebSocketState.CLOSED
+        self.state = WebSocketState.CLOSED #socket is closed before executing the self.on close
 
         if self.on_close:
             self.on_close()
