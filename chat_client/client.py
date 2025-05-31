@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical
-from textual.widgets import Input, Select, Static
+from textual.containers import Horizontal, Vertical, ScrollableContainer
+from textual.widgets import Input, Select, Static, Button
 from textual.reactive import reactive
 from textual.message import Message
 
@@ -65,7 +65,10 @@ class ChatApp(App):
         height: 1fr;
         border: solid white;
         padding: 1;
-        overflow-y: auto;
+    }
+
+    #messages:focus {
+        border: solid ansi_blue;
     }
 
     MessageRow {
@@ -92,6 +95,15 @@ class ChatApp(App):
         width: 1fr;
         margin-left: 1;
     }
+
+    #send_button {
+        width: 3;
+        margin-left: 1;
+    }
+
+    #send_button:focus {
+        border: solid ansi_blue;
+    }
     """
 
     users: reactive[list[str]] = reactive([])
@@ -99,15 +111,17 @@ class ChatApp(App):
 
     def compose(self) -> ComposeResult:
         with Vertical():
-            with Vertical(id="messages"):
+            with ScrollableContainer(id="messages"):
                 pass
             with Horizontal(id="input_row"):
                 yield Select(
-                    [("ALL", "ALL")],
+                    [("[green]ALL[/green]", "ALL")],
                     value="ALL",
-                    id="target_select"
+                    id="target_select",
+                    allow_blank=False
                 )
                 yield Input(placeholder="Type message...", id="message_input")
+                yield Button("→", id="send_button", disabled=True)
 
     def on_mount(self):
         self.users = ["Alice", "Bob", "Charlie"]
@@ -117,11 +131,14 @@ class ChatApp(App):
             Msg("Secret message", True, "Alice"),
             Msg("Another secret", False, "Bob"),
         ]
+        self.query_one("#messages").focus()
 
     def watch_users(self, users: list[str]):
         select = self.query_one("#target_select", Select)
-        options = [("ALL", "ALL")] + [(user, user) for user in users]
+        options = [("[green]ALL[/green]", "ALL")] + [(f"[red]{user}[/red]", user) for user in users]
         select.set_options(options)
+        if select.value is Select.BLANK:
+            select.value = "ALL"
 
     def watch_messages(self, messages: list[Msg]):
         messages_container = self.query_one("#messages")
@@ -132,18 +149,32 @@ class ChatApp(App):
 
     async def on_input_submitted(self, event: Input.Submitted):
         if event.input.id == "message_input":
-            text = event.value.strip()
-            if not text:
-                return
+            await self._send_message()
 
-            select = self.query_one("#target_select", Select)
-            target = select.value
+    async def on_input_changed(self, event: Input.Changed):
+        if event.input.id == "message_input":
+            button = self.query_one("#send_button", Button)
+            button.disabled = not event.value.strip()
 
-            private_peer = None if target == "ALL" else target
-            new_msg = Msg(text, False, private_peer)
+    async def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "send_button":
+            await self._send_message()
 
-            self.messages = [*self.messages, new_msg]
-            event.input.clear()
+    async def _send_message(self):
+        input_widget = self.query_one("#message_input", Input)
+        text = input_widget.value.strip()
+        if not text:
+            return
+
+        select = self.query_one("#target_select", Select)
+        target = select.value
+
+        private_peer = None if target == "ALL" else target
+        new_msg = Msg(text, False, private_peer)
+
+        self.messages = [*self.messages, new_msg]
+        input_widget.clear()
+        self.query_one("#messages").focus()
 
 
 if __name__ == "__main__":
