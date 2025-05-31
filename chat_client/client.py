@@ -1,137 +1,149 @@
+from dataclasses import dataclass
+from typing import Optional
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Input, Select, Static, ListView, ListItem
+from textual.widgets import Input, Select, Static
 from textual.reactive import reactive
-from dataclasses import dataclass
-from typing import Optional, List
+from textual.message import Message
 
 
 @dataclass
 class Msg:
-    is_inbound: bool
     text: str
-    private_peer: Optional[str] = None
+    is_inbound: bool
+    private_peer_name: Optional[str] = None
 
 
-class MessageWidget(Static):
-    def __init__(self, msg: Msg):
-        super().__init__()
-        # Set CSS classes for styling
-        classes = ["message"]
-        classes.append("inbound" if msg.is_inbound else "outbound")
-        classes.append("private" if msg.private_peer else "public")
-        self.add_class(" ".join(classes))
+class MessageBubble(Static):
+    def __init__(self, msg: Msg, **kwargs):
+        self.msg = msg
+        content = self._format_message()
+        super().__init__(content, **kwargs)
+        self._update_styles()
 
-        # Format the message display
-        header = f"{'From' if msg.is_inbound else 'To'} {msg.private_peer}" if msg.private_peer else ""
-        content = f"{header}\n{msg.text}" if header else msg.text
-        self.update(content)
+    def _format_message(self) -> str:
+        if self.msg.private_peer_name:
+            direction = "From" if self.msg.is_inbound else "To"
+            return f"{direction}: {self.msg.private_peer_name}\n{self.msg.text}"
+        return self.msg.text
+
+    def _update_styles(self):
+        self.styles.padding = (0, 2)
+        self.styles.border = ("round", "white")
+        self.styles.width = "auto"
+        self.styles.max_width = "80%"
+
+        if self.msg.private_peer_name:
+            self.styles.background = "red"
+            self.styles.color = "white"
+        else:
+            self.styles.background = "green"
+            self.styles.color = "white"
+
+
+class MessageRow(Horizontal):
+    def __init__(self, msg: Msg, **kwargs):
+        super().__init__(**kwargs)
+        self.msg = msg
+
+    def compose(self) -> ComposeResult:
+        if self.msg.is_inbound:
+            yield MessageBubble(self.msg)
+            yield Static("", classes="spacer")
+        else:
+            yield Static("", classes="spacer")
+            yield MessageBubble(self.msg)
 
 
 class ChatApp(App):
-    CSS_PATH = "client.tcss"
+    CSS = """
+    Screen {
+        layout: vertical;
+    }
 
-    # Properly declare reactive variable
-    messages: reactive[List[Msg]] = reactive(list)
+    #messages {
+        height: 1fr;
+        border: solid white;
+        padding: 1;
+        overflow-y: auto;
+    }
+
+    MessageRow {
+        height: auto;
+        margin: 1 0;
+    }
+
+    .spacer {
+        width: 1fr;
+    }
+
+    #input_row {
+        height: auto;
+        min-height: 3;
+        padding: 1;
+        dock: bottom;
+    }
+
+    Select {
+        width: 20;
+    }
+
+    Input {
+        width: 1fr;
+        margin-left: 1;
+    }
+    """
+
+    users: reactive[list[str]] = reactive([])
+    messages: reactive[list[Msg]] = reactive([])
 
     def compose(self) -> ComposeResult:
-        self.messages_view = ListView(id="messages")
-        self.recipient_select = Select(
-            options=[("ALL", "ALL"), ("Alice", "Alice"), ("Bob", "Bob")],
-            value="ALL",
-            id="recipient"
-        )
-        self.message_input = Input(placeholder="Type your message...", id="input")
+        with Vertical():
+            with Vertical(id="messages"):
+                pass
+            with Horizontal(id="input_row"):
+                yield Select(
+                    [("ALL", "ALL")],
+                    value="ALL",
+                    id="target_select"
+                )
+                yield Input(placeholder="Type message...", id="message_input")
 
-        input_section = Horizontal(
-            self.recipient_select,
-            self.message_input,
-            id="input_section"
-        )
-
-        yield Vertical(self.messages_view, input_section)
-
-    def on_mount(self) -> None:
-        self.message_input.focus()
-        # Add some sample messages
-        self.add_sample_messages()
-
-    def add_sample_messages(self) -> None:
-        """Add sample messages using reactive assignment"""
-        sample_messages = [
-            Msg(is_inbound=True, text="Hello everyone!", private_peer=None),
-            Msg(is_inbound=False, text="Hi there!", private_peer=None),
-            Msg(is_inbound=True, text="How are you doing?", private_peer="Alice"),
-            Msg(is_inbound=False, text="I'm doing great, thanks!", private_peer="Alice"),
+    def on_mount(self):
+        self.users = ["Alice", "Bob", "Charlie"]
+        self.messages = [
+            Msg("Hello everyone!", False),
+            Msg("Hi there!", True),
+            Msg("Secret message", True, "Alice"),
+            Msg("Another secret", False, "Bob"),
         ]
 
-        # This triggers the watcher
-        self.messages = sample_messages
+    def watch_users(self, users: list[str]):
+        select = self.query_one("#target_select", Select)
+        options = [("ALL", "ALL")] + [(user, user) for user in users]
+        select.set_options(options)
 
-    def watch_messages(self, messages: List[Msg]) -> None:
-        """Reactive watcher - automatically called when messages changes"""
-        self.messages_view.clear()
+    def watch_messages(self, messages: list[Msg]):
+        messages_container = self.query_one("#messages")
+        messages_container.remove_children()
         for msg in messages:
-            message_widget = MessageWidget(msg)
-            self.messages_view.append(ListItem(message_widget))
+            messages_container.mount(MessageRow(msg))
+        messages_container.scroll_end()
 
-        # Auto-scroll to bottom
-        if messages:
-            self.messages_view.scroll_end()
+    async def on_input_submitted(self, event: Input.Submitted):
+        if event.input.id == "message_input":
+            text = event.value.strip()
+            if not text:
+                return
 
-    async def on_input_submitted(self, event: Input.Submitted) -> None:
-        content = event.value.strip()
-        if not content:
-            return
+            select = self.query_one("#target_select", Select)
+            target = select.value
 
-        recipient = self.recipient_select.value
+            private_peer = None if target == "ALL" else target
+            new_msg = Msg(text, False, private_peer)
 
-        # Create the new message
-        new_msg = Msg(
-            is_inbound=False,
-            text=content,
-            private_peer=None if recipient == "ALL" else recipient
-        )
-
-        # Create new list to trigger reactive update
-        # (Modifying the list in-place won't trigger the watcher)
-        current_messages = list(self.messages)
-        current_messages.append(new_msg)
-        self.messages = current_messages
-
-        # Clear input
-        self.message_input.value = ""
-        self.message_input.focus()
-
-        # Simulate a response
-        await self.simulate_response(recipient, content)
-
-    async def simulate_response(self, recipient: str, original_message: str) -> None:
-        """Simulate receiving a response message"""
-        import asyncio
-        await asyncio.sleep(1)
-
-        responses = [
-            "That's interesting!",
-            "I see what you mean.",
-            "Thanks for sharing!",
-            "Good point!",
-            "I agree with that."
-        ]
-
-        import random
-        response_text = random.choice(responses)
-
-        response_msg = Msg(
-            is_inbound=True,
-            text=response_text,
-            private_peer=recipient if recipient != "ALL" else None
-        )
-
-        # Again, create new list to trigger reactive update
-        current_messages = list(self.messages)
-        current_messages.append(response_msg)
-        self.messages = current_messages
+            self.messages = [*self.messages, new_msg]
+            event.input.clear()
 
 
 if __name__ == "__main__":
