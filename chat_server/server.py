@@ -18,8 +18,11 @@ class ChatServer:
 
     def on_connection(self, websocket: WebSocket):
         self.clients.append(ChatClient(websocket))
-        print(f"on_connection, sending")
+        print(f"on_connection - new client conected")
         websocket.send_text("a socket has joined")
+
+    def on_message(self, websocket: WebSocket):
+        print(f)
 
 
     def start(self):
