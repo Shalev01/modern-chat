@@ -6,8 +6,8 @@ from textual.widgets import Input, Select, Static, Button
 from textual.reactive import reactive
 from textual.message import Message
 
-from chat_protocol.messages import BaseChatMessage, ReadyChatMessage, AddUserChatMessage, RemUserChatMessage, \
-    PublicChatMessage, PrivateChatMessage, ByeChatMessage
+from chat_protocol.messages import BaseSecureChatMessage, WelcomeMessage, AddUserMessage, RemoveUserMessage, \
+    PublicMessage, PrivateMessage, LeaveMessage
 from websocket_lib.websocket import WebSocket
 from websocket_lib.websocket_client import connect_client
 
@@ -111,7 +111,7 @@ class ChatApp(App):
     }
     """
 
-    users: reactive[list[AddUserChatMessage]] = reactive([])
+    users: reactive[list[AddUserMessage]] = reactive([])
     messages: reactive[list[Msg]] = reactive([])
 
     def compose(self) -> ComposeResult:
@@ -138,7 +138,7 @@ class ChatApp(App):
         # ]
         self.query_one("#messages").focus()
 
-    def watch_users(self, users: list[AddUserChatMessage]):
+    def watch_users(self, users: list[AddUserMessage]):
         select = self.query_one("#target_select", Select)
         options = [("[green]ALL[/green]", "ALL")] + [(f"[red]{user.name}[/red]", user.names) for user in users]
         select.set_options(options)
@@ -184,50 +184,50 @@ class ChatApp(App):
         user = self._find_user(target) if target != "ALL" else None
 
         self.send_websocket_message(
-            PrivateChatMessage(encrypted_text=user.public_key + text, name=user.name) if user
-            else PublicChatMessage(text))
+            PrivateMessage(encrypted_text=user.public_key + text, name=user.name) if user
+            else PublicMessage(text))
 
     chat_state: Literal[None, "connected", "disconnected"] = None
 
-    def _find_user(self, name: str) -> Optional[AddUserChatMessage]:
+    def _find_user(self, name: str) -> Optional[AddUserMessage]:
         user = next((user for user in self.users if user.name == name), None)
         if not user:
             raise Exception(f"User {name} not found")
         return user
 
-    def send_websocket_message(self, msg: Union[PublicChatMessage, PrivateChatMessage]):
+    def send_websocket_message(self, msg: Union[PublicMessage, PrivateMessage]):
         ws = self.query_one("WebSocketClient", WebSocket)
         ws.send_text(msg.to_json())
 
     def on_websocket_message(self, msg: str):
-        message = BaseChatMessage.from_json(msg)
-        if isinstance(message, ReadyChatMessage):
+        message = BaseSecureChatMessage.from_json(msg)
+        if isinstance(message, WelcomeMessage):
             if self.chat_state is not None:
                 raise Exception("Chat state already set")
             self.chat_state = "connected"
-        elif isinstance(msg, AddUserChatMessage):
+        elif isinstance(msg, AddUserMessage):
             if self.chat_state is "disconnected":
                 return
             # TODO: check duplicates, throw error or override
             self.users = self.users + [msg]
-        elif isinstance(msg, RemUserChatMessage):
+        elif isinstance(msg, RemoveUserMessage):
             if self.chat_state is "disconnected":
                 return
             # TODO: check ex
             self.users = [user for user in self.users if user.name != msg.name]
-        elif isinstance(message, PublicChatMessage):
+        elif isinstance(message, PublicMessage):
             if self.chat_state is not "connected":
                 raise Exception(f"Chat not connected {self.chat_state or 'None'}")
             new_msg = Msg(message.text, True)
             self.messages = [*self.messages, new_msg]
             self.query_one("#messages").scroll_end()  # TODO: should be done in listener
-        elif isinstance(message, PrivateChatMessage):
+        elif isinstance(message, PrivateMessage):
             if self.chat_state is not "connected":
                 raise Exception(f"Chat not connected - {self.chat_state or 'None'}")
             new_msg = Msg(message.encrypted_text, True, message.name)
             self.messages = [*self.messages, new_msg]
             self.query_one("#messages").scroll_end()  # TODO: should be done in listener
-        elif isinstance(message, ByeChatMessage):
+        elif isinstance(message, LeaveMessage):
             if self.chat_state is not "connected":
                 raise Exception(f"Chat not connected - {self.chat_state or 'None'}")
             self.chat_state = "disconnected"
