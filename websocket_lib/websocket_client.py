@@ -22,7 +22,7 @@ def connect_client(url: str) -> WebSocket:
         sock.connect((host, port))
         handshake_client(sock, host, path)
         ws = WebSocket(sock, is_client=True)
-        ws.start_threads()
+
         return ws
 
     except Exception:
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     def input_reader(ws):
 
         while ws.state != WebSocketState.CLOSED:
-            text = input()
+            text = input("enter input: ")
             if text == "_close_":
                 ws.close()
                 break
@@ -55,9 +55,13 @@ if __name__ == "__main__":
 
 
     client = connect_client("ws://localhost:8765")
+
     client.on_message = on_message
     client.on_close = on_close
     client.on_error = on_error
+
+    client.start_threads()
+
 
     input_reader(client)
 
