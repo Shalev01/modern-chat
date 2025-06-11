@@ -86,8 +86,13 @@ class WebSocket:
         self._queue_frame(OpCode.PONG, data)
 
     def _handle_receive_text(self, frame: Frame) -> None:
+        print(f"handel text")
         if self.on_message:
+            print(f"handel text exist. is client {self.is_client}")
             self.on_message(frame.payload.decode('utf-8'))
+        else:
+            print("handel text doesnt exist?")
+            print(f"handel text exist. is client {self.is_client}")
 
     def _handle_receive_binary(self, frame: Frame) -> None:
         if self.on_message:
@@ -161,6 +166,10 @@ class WebSocket:
 
                             handler = handlers.get(frame.opcode)
                             if handler:
+                                #print(f"{data} is in {handler.__name__}")
+                                #print(handler)  # Before the call
+                                #print(type(handler))
+
                                 handler(frame)
 
                         except ValueError:

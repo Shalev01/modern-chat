@@ -56,6 +56,7 @@ class WebSocketServer:
             handshake_server(client_sock)
 
             ws = WebSocket(client_sock, is_client=False)
+
             self.clients.append(ws)
 
 
@@ -65,6 +66,7 @@ class WebSocketServer:
                 self.on_connection(ws)
 
             ws.start_threads()
+            ws.send_text(f"hello client {ws.sock.getpeername()} joined us!")
 
             while ws.state != WebSocketState.CLOSED:
                 time.sleep(0.1)
@@ -81,9 +83,16 @@ if __name__ == "__main__":
         print(data)
 
 
+    def on_error(error: Exception) -> None:
+        print(f"on_error")
+        print(error)
+
     def on_connection(ws: WebSocket) -> None:
-        print(f"on_connection")
+        print(f"system message - on_connection. a client connected: {ws.sock.getpeername()}")
         ws.on_message = on_message
+        ws.on_error = on_error
+
+
 
     server = WebSocketServer()
     server.on_connection = on_connection

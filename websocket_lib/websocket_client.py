@@ -33,28 +33,43 @@ def connect_client(url: str) -> WebSocket:
 if __name__ == "__main__":
     import threading
 
-    def input_reader(client):
-        while client.state != WebSocketState.CLOSED:
+    def input_reader(ws):
+
+        while ws.state != WebSocketState.CLOSED:
             text = input()
             if text == "_close_":
-                client.close()
+                ws.close()
                 break
             else:
-                client.send_text(text)
+                ws.send_text(text)
+
+    def on_message(data: bytes | str) -> None:
+        print("client on message")
+        print(data)
+
+    def on_error(e) -> None:
+        print(f"on_error")
+        print(e)
+
+    def on_close() -> None:
+        print(f"on_close")
+
 
     client = connect_client("ws://localhost:8765")
-    client.on_error = lambda e: print(e)
-    client.on_close = lambda : print("closed")
-    client.on_message = lambda data: print(data)
+    client.on_message = on_message
+    client.on_close = on_close
+    client.on_error = on_error
+
+    input_reader(client)
 
 
     # def on_message(message):
     #     print(message)
-
-    client.send_text("hello")
-    client.send_text("world")
+    #
+    # client.send_text("hello")
+    # client.send_text("world")
 
     # threading.Thread(target=input_reader, args=(client,), daemon=True).start()
 
-    while client.state != WebSocketState.CLOSED:
-        pass
+    # while client.state != WebSocketState.CLOSED:
+    #     pass
