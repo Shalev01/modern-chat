@@ -31,7 +31,6 @@ def connect_client(url: str) -> WebSocket:
 
 
 if __name__ == "__main__":
-    import threading
 
     def input_reader(ws):
 
@@ -43,15 +42,15 @@ if __name__ == "__main__":
             else:
                 ws.send_text(text)
 
-    def on_message(data: bytes | str) -> None:
+    def on_message(data: bytes | str, ws) -> None:
         print("client on message")
         print(data)
 
-    def on_error(e) -> None:
+    def on_error(e, ws) -> None:
         print(f"on_error")
         print(e)
 
-    def on_close() -> None:
+    def on_close(ws) -> None:
         print(f"on_close")
 
 

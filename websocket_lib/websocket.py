@@ -27,9 +27,9 @@ class WebSocket:
         self._receive_thread: Optional[threading.Thread] = None
         self._send_thread: Optional[threading.Thread] = None
 
-        self.on_message: Optional[Callable[[Union[str, bytes]], None]] = None
-        self.on_close: Optional[Callable[[], None]] = None
-        self.on_error: Optional[Callable[[Exception], None]] = None
+        self.on_message: Optional[Callable[[Union[str, bytes], WebSocket], None]] = None
+        self.on_close: Optional[Callable[[WebSocket], None]] = None
+        self.on_error: Optional[Callable[[Exception, WebSocket], None]] = None
 
 
 
@@ -61,16 +61,16 @@ class WebSocket:
 
         self.running = False
 
-        if self._receive_thread and self._receive_thread.is_alive():
+        if self._receive_thread and self._receive_thread.is_alive() and threading.current_thread() is not self._receive_thread:
             self._receive_thread.join(timeout=5.0)
-        if self._send_thread and self._send_thread.is_alive():
+        if self._send_thread and self._send_thread.is_alive() and threading.current_thread() is not self._send_thread:
             self._send_thread.join(timeout=5.0)
 
         self.sock.close()
         self.state = WebSocketState.CLOSED #socket is closed before executing the self.on close
 
         if self.on_close:
-            self.on_close()
+            self.on_close(self)
 
 
     def send_text(self, message: str) -> None:
@@ -86,17 +86,13 @@ class WebSocket:
         self._queue_frame(OpCode.PONG, data)
 
     def _handle_receive_text(self, frame: Frame) -> None:
-        print(f"handel text")
+        print(f"handel text exist. is client {self.is_client}. has on message {self.on_message is not None}")
         if self.on_message:
-            print(f"handel text exist. is client {self.is_client}")
-            self.on_message(frame.payload.decode('utf-8'))
-        else:
-            print("handel text doesnt exist?")
-            print(f"handel text exist. is client {self.is_client}")
+            self.on_message(frame.payload.decode('utf-8'), self)
 
     def _handle_receive_binary(self, frame: Frame) -> None:
         if self.on_message:
-            self.on_message(frame.payload)
+            self.on_message(frame.payload, self)
 
     def _handle_receive_ping(self, frame: Frame) -> None:
         self._queue_frame(OpCode.PONG, frame.payload)
@@ -132,11 +128,11 @@ class WebSocket:
                     continue
                 except Exception as e:
                     if self.on_error:
-                        self.on_error(e)
+                        self.on_error(e, self)
                     break
         except Exception as e:
             if self.on_error:
-                self.on_error(e)
+                self.on_error(e, self)
 
     def _receive_loop(self) -> None:
         buffer = bytearray()
@@ -166,10 +162,6 @@ class WebSocket:
 
                             handler = handlers.get(frame.opcode)
                             if handler:
-                                #print(f"{data} is in {handler.__name__}")
-                                #print(handler)  # Before the call
-                                #print(type(handler))
-
                                 handler(frame)
 
                         except ValueError:
@@ -179,8 +171,8 @@ class WebSocket:
                     continue
                 except Exception as e:
                     if self.on_error:
-                        self.on_error(e)
+                        self.on_error(e, self)
                     break
         except Exception as e:
             if self.on_error:
-                self.on_error(e)
+                self.on_error(e, self)

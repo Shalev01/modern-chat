@@ -13,7 +13,6 @@ class WebSocketServer:
         self.port = port
         self.on_connection: Optional[Callable[[WebSocket], None]] = None
         self._running = False
-        self.clients: list[WebSocket] = []
 
     def start(self) -> None:
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,7 +21,6 @@ class WebSocketServer:
         server_sock.listen(5)
 
         self._running = True
-        print(f"WebSocket server listening on {self.host}:{self.port}")
 
         try:
             while self._running:
@@ -42,31 +40,17 @@ class WebSocketServer:
     def stop(self) -> None:
         self._running = False
 
-
-    # def _on_connection(self, client_socket: WebSocket) -> None:
-    #
-    #     for client in self.clients:
-    #         client.send_text("someone new entered the chat")
-
-
     def _handle_client(self, client_sock: socket.socket, addr: tuple) -> None:
         try:
-
 
             handshake_server(client_sock)
 
             ws = WebSocket(client_sock, is_client=False)
 
-            self.clients.append(ws)
-
-
-            # self._on_connection(ws)
-
             if self.on_connection:
                 self.on_connection(ws)
 
             ws.start_threads()
-            ws.send_text(f"hello client {ws.sock.getpeername()} joined us!")
 
             while ws.state != WebSocketState.CLOSED:
                 time.sleep(0.1)
@@ -78,24 +62,33 @@ class WebSocketServer:
 
 if __name__ == "__main__":
 
-    def on_message(data: bytes | str) -> None:
-        print(f"on_message")
-        print(data)
+    def on_message(data: bytes | str, ws: WebSocket) -> None:
+        print(f"on_message {ws} {data}")
+
+    def on_error(error: Exception, ws: WebSocket) -> None:
+        print(f"on_error {ws} {error} ")
 
 
-    def on_error(error: Exception) -> None:
-        print(f"on_error")
-        print(error)
+    def on_close(ws: WebSocket) -> None:
+        print(f"on_close {ws}")
+
 
     def on_connection(ws: WebSocket) -> None:
         print(f"system message - on_connection. a client connected: {ws.sock.getpeername()}")
-        ws.on_message = on_message
         ws.on_error = on_error
+        ws.on_close = on_close
+        ws.send_text("wellcome 1")
+        ws.on_message = on_message
+        ws.send_text("wellcome 2")
+
 
 
 
     server = WebSocketServer()
     server.on_connection = on_connection
+
+    print('server starting at ' + server.host + ':' + str(server.port) )
+
     server.start()
 
 #TODO - debug _on_connection func + try to implement a ping system on server
