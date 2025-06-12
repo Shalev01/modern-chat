@@ -4,16 +4,15 @@ import logging
 import websockets
 import json
 from dataclasses import dataclass
-from typing import Optional, Union, Literal
+from typing import Optional, Literal
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Input, Select, Static, Button
 from textual.reactive import reactive
-from textual.message import Message
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
-from chat_protocol.messages import (
+from secure_chat.chat_protocol.messages import (
     BaseSecureChatMessage, WelcomeMessage, AddUserMessage, RemoveUserMessage,
     PublicMessage, PrivateMessage, RoutedPublicMessage, RoutedPrivateMessage,
     JoinMessage, LeaveMessage, ErrorMessage, UserInfo

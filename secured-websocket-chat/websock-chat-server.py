@@ -10,7 +10,7 @@ import logging
 
 from websocket_lib.websocket_server import WebSocketServer
 from websocket_lib.websocket import WebSocket, WebSocketState
-from chat_protocol.messages import (
+from secure_chat.chat_protocol.messages import (
     BaseSecureChatMessage, JoinMessage, LeaveMessage, PublicMessage,
     PrivateMessage, WelcomeMessage, AddUserMessage, RemoveUserMessage,
     RoutedPublicMessage, RoutedPrivateMessage, ErrorMessage, UserInfo

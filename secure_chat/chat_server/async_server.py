@@ -9,7 +9,7 @@ from cryptography.exceptions import InvalidSignature
 from typing import Dict, Optional
 import logging
 
-from chat_protocol.messages import (
+from secure_chat.chat_protocol.messages import (
     BaseSecureChatMessage, JoinMessage, LeaveMessage, PublicMessage,
     PrivateMessage, WelcomeMessage, AddUserMessage, RemoveUserMessage,
     RoutedPublicMessage, RoutedPrivateMessage, ErrorMessage, UserInfo
@@ -218,7 +218,7 @@ class SecureChatServer:
 
 
 async def main():
-    keys_dir = sys.argv[1] if len(sys.argv) > 1 else "../sample_keys"
+    keys_dir = sys.argv[1] if len(sys.argv) > 1 else "../../sample_keys"
     user_keys = load_user_keys(keys_dir)
     server = SecureChatServer(user_keys)
     await server.start_server()
