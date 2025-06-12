@@ -33,6 +33,8 @@ def connect_client(url: str) -> WebSocket:
 
 if __name__ == "__main__":
 
+    print("IM AM HERE")
+
     def input_reader(ws):
 
         while ws.state != WebSocketState.CLOSED:

@@ -3,12 +3,14 @@ import json
 import inspect
 import sys
 import uuid
-
+from dacite import from_dict
 
 @dataclass
 class UserInfo:
     name: str
     public_key: str
+
+
 
 
 @dataclass
@@ -24,25 +26,17 @@ class BaseSecureChatMessage:
         return json.dumps(asdict(self))
 
     @classmethod
-    def from_json(cls, json_str: str) -> "BaseSecureChatMessage":
+    def from_json(cls, json_str: str):
         data = json.loads(json_str)
         command = data.pop("_command", "")
-        message_id = data.pop("id", None)
-
         for name, obj in inspect.getmembers(sys.modules[__name__]):
             if (inspect.isclass(obj) and
                     issubclass(obj, BaseSecureChatMessage) and
                     obj != BaseSecureChatMessage and
                     obj.__name__ == command):
-                instance = obj(**data)
-                if message_id:
-                    instance.id = message_id
-                return instance
+                return from_dict(obj, data)
+        raise Exception(f"Command not found {command}")
 
-        instance = cls(**data)
-        if message_id:
-            instance.id = message_id
-        return instance
 
 
 @dataclass
