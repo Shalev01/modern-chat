@@ -23,6 +23,7 @@ def connect_client(url: str) -> WebSocket:
         handshake_client(sock, host, path)
         ws = WebSocket(sock, is_client=True)
 
+
         return ws
 
     except Exception:
