@@ -51,11 +51,11 @@ class ChatClient:
 
         if cmd == 'users':
             count = int(parts[1]) if len(parts) > 1 else 5
-            print(self.users[:count])
+            print([user.name for user in self.users[:count]])
 
         if cmd == 'messages':
             count = int(parts[1]) if len(parts) > 1 else 5
-            print(self.messages[:count])
+            print(self.messages[-count:])
 
         if cmd == 'public':
             if len(parts) < 2:
@@ -71,6 +71,10 @@ class ChatClient:
             public_key = self.user_public_keys[to_name]
             return PrivateMessage(to_name, self._encrypt_message(text, public_key))
 
+        if cmd == '_close_':
+            self.websocket.close()
+            self.chat_state = "disconnected"
+
         return None
 
 
@@ -82,8 +86,9 @@ class ChatClient:
                 message = self._parse_user_input(text)
                 if message:
                     self.websocket.send_text(message.to_json())
-
-                    self.messages = [*self.messages, message.text]
+                    if isinstance(message, PrivateMessage):
+                        message.encrypted_text = ' '.join(text.strip().split()[2:])
+                    self.messages = [*self.messages, message]
 
 
     def run(self):
@@ -144,13 +149,13 @@ class ChatClient:
                     raise(Exception(f"Welcome message received when state is {self.chat_state}: {raw_message}"))
 
                 self.chat_state = "connected"
-                self.users = message.users
+                self.users = [user for user in message.users if user.name != self.username]
                 for user in message.users:
-                    if user.name == self.username:
-                        continue
                     self.user_public_keys[user.name] = serialization.load_pem_public_key(
                         user.public_key.encode()
                     )
+
+
                 logger.info(f"Connected as {self.username}")
 
             if self.chat_state != "connected":
@@ -158,6 +163,7 @@ class ChatClient:
                 return
 
             if isinstance(message, AddUserMessage):
+                logger.info(f"Adding user {message.name}")
                 user_info = UserInfo(name=message.name, public_key=message.public_key)
                 self.users = [*self.users, user_info]
                 self.user_public_keys[message.name] = serialization.load_pem_public_key(
@@ -222,38 +228,3 @@ if __name__ == "__main__":
     client = ChatClient(username, private_key_path)
 
     client.run()
-
-
-
-    # def input_reader(ws):
-    #
-    #     while ws.state != WebSocketState.CLOSED:
-    #         text = input("enter input: ")
-    #         if text == "_close_":
-    #             ws.close()
-    #             break
-    #         else:
-    #             ws.send_text(text)
-    #
-    # def on_message(data: bytes | str, ws) -> None:
-    #     print("client on message")
-    #     print(data)
-    #
-    # def on_error(e, ws) -> None:
-    #     print(f"on_error")
-    #     print(e)
-    #
-    # def on_close(ws) -> None:
-    #     print(f"on_close")
-    #
-    #
-    # client = connect_client("ws://localhost:8765")
-    #
-    # client.on_message = on_message
-    # client.on_close = on_close
-    # client.on_error = on_error
-    #
-    # client.start_threads()
-    #
-    #
-    # input_reader(client)

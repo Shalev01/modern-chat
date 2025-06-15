@@ -86,7 +86,6 @@ class WebSocket:
         self._queue_frame(OpCode.PONG, data)
 
     def _handle_receive_text(self, frame: Frame) -> None:
-        print(f"handel text exist. is client {self.is_client}. has on message {self.on_message is not None}")
         if self.on_message:
             self.on_message(frame.payload.decode('utf-8'), self)
 
