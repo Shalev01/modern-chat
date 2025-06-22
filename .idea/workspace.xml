@@ -4,21 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b883711e-2d3a-43ab-bf48-972a1d184415" name="Changes" comment="created a threaded server, addes a _close_ option for client + some fixes">
+    <list default="true" id="b883711e-2d3a-43ab-bf48-972a1d184415" name="Changes" comment="removed - init + async files. removed areas with # with unnecessary code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_client/async_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/secure_chat/chat_client/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_protocol/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_server/async_server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/secure_chat/chat_server/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secured-websocket-chat/websock-chat-server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/websocket_lib/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/websocket_lib/client.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/websocket_lib/protocol.py" beforeDir="false" afterPath="$PROJECT_DIR$/websocket_lib/protocol.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/websocket_lib/websocket.py" beforeDir="false" afterPath="$PROJECT_DIR$/websocket_lib/websocket.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/websocket_lib/websocket_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/websocket_lib/websocket_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/websocket_lib/websocket_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/websocket_lib/websocket_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/secure_chat/chat_server/__init__.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +93,7 @@
       <updated>1749725721415</updated>
       <workItem from="1749725722931" duration="32628000" />
       <workItem from="1750172917856" duration="2798000" />
-      <workItem from="1750276734155" duration="10908000" />
+      <workItem from="1750276734155" duration="10975000" />
     </task>
     <task id="LOCAL‎-00001" summary="fixed not showing self messages. - since the server is not sending the message to the client who sent him it, the message was not saved. max message limit is still 5">
       <option name="closed" value="true" />
@@ -123,7 +111,23 @@
       <option name="project" value="LOCAL‎" />
       <updated>1749971313496</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL‎-00003" summary="removed - init + async files. removed areas with # with unnecessary code">
+      <option name="closed" value="true" />
+      <created>1750611487939</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL‎-00003" />
+      <option name="project" value="LOCAL‎" />
+      <updated>1750611487939</updated>
+    </task>
+    <task id="LOCAL‎-00004" summary="removed - init + async files. removed areas with # with unnecessary code">
+      <option name="closed" value="true" />
+      <created>1750611493294</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL‎-00004" />
+      <option name="project" value="LOCAL‎" />
+      <updated>1750611493294</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -132,7 +136,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fixed not showing self messages. - since the server is not sending the message to the client who sent him it, the message was not saved. max message limit is still 5" />
     <MESSAGE value="created a threaded server, addes a _close_ option for client + some fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="created a threaded server, addes a _close_ option for client + some fixes" />
+    <MESSAGE value="removed - init + async files. removed areas with # with unnecessary code" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed - init + async files. removed areas with # with unnecessary code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -152,12 +157,12 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/modern_chat$async_client.coverage" NAME="async_client Coverage Results" MODIFIED="1750611050768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_client" />
-    <SUITE FILE_PATH="coverage/modern_chat$client.coverage" NAME="client Coverage Results" MODIFIED="1750611392637" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_client" />
+    <SUITE FILE_PATH="coverage/modern_chat$client.coverage" NAME="client Coverage Results" MODIFIED="1750611531051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_client" />
     <SUITE FILE_PATH="coverage/modern_chat$websocket_server.coverage" NAME="websocket_server Coverage Results" MODIFIED="1749914168734" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/websocket_lib" />
     <SUITE FILE_PATH="coverage/modern_chat$async_server.coverage" NAME="async_server Coverage Results" MODIFIED="1749898131989" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_server" />
     <SUITE FILE_PATH="coverage/modern_chat$websocket.coverage" NAME="websocket Coverage Results" MODIFIED="1749898220542" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/websocket_lib" />
     <SUITE FILE_PATH="coverage/modern_chat$new_chat_server.coverage" NAME="new_chat_server Coverage Results" MODIFIED="1749830061065" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_server" />
-    <SUITE FILE_PATH="coverage/modern_chat$server.coverage" NAME="server Coverage Results" MODIFIED="1750611388696" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_server" />
+    <SUITE FILE_PATH="coverage/modern_chat$server.coverage" NAME="server Coverage Results" MODIFIED="1750611527801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/secure_chat/chat_server" />
     <SUITE FILE_PATH="coverage/modern_chat$websocket_client.coverage" NAME="websocket_client Coverage Results" MODIFIED="1749725834383" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/websocket_lib" />
   </component>
 </project>
