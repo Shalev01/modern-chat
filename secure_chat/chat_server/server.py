@@ -231,7 +231,6 @@ class SecureChatServer:
         with self.lock:
             self.clients[websocket] = None
 
-        # Set up WebSocket event handlers
         websocket.on_message = lambda data, ws: self.on_message(data, ws)
         websocket.on_error = lambda error, ws: self.on_error(error, ws)
         websocket.on_close = lambda ws: self.on_close(ws)

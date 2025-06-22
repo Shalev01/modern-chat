@@ -94,7 +94,6 @@ def handshake_client(sock: socket.socket, host: str, path: str = "/") -> None:
     if not _validate_client_response(response, key):
         raise ConnectionError("WebSocket handshake failed")
 
-    # self.state = WebSocketState.OPEN
 
 def handshake_server(client_sock: socket.socket) -> None:
     request_data = client_sock.recv(4096)
@@ -165,10 +164,3 @@ def _parse_headers(request: str) -> dict[str, str]:
             key, value = line.split(':', 1)
             headers[key.strip().lower()] = value.strip()
     return headers
-
-
-
-    # def handshake_server(self, request_data: bytes) -> bytes:
-    #     response = self.handshake_handler.create_server_response(request_data)
-    #     self.state = WebSocketState.OPEN
-    #     return response

@@ -9,7 +9,6 @@ from websocket_lib.protocol import OpCode, create_frame, parse_frame, Frame
 
 
 class WebSocketState(IntEnum):
-    # CONNECTING = 0
     OPEN = 1
     CLOSING = 2
     CLOSED = 3
@@ -67,7 +66,7 @@ class WebSocket:
             self._send_thread.join(timeout=5.0)
 
         self.sock.close()
-        self.state = WebSocketState.CLOSED #socket is closed before executing the self.on close
+        self.state = WebSocketState.CLOSED
 
         if self.on_close:
             self.on_close(self)

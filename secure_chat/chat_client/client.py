@@ -1,7 +1,5 @@
 import json
-import sys
 from dataclasses import dataclass
-from selectors import SelectSelector
 from typing import Optional, Union, Literal
 import logging
 
@@ -109,8 +107,6 @@ class ChatClient:
 
             self.websocket.send_text(join_msg.to_json())
 
-            # while client.chat_state != "disconnected":
-            #     pass
 
             self._handle_user_input()
 
@@ -177,7 +173,7 @@ class ChatClient:
                 if message.name in self.user_public_keys:
                     del self.user_public_keys[message.name]
 
-            elif isinstance(message, RoutedPublicMessage):## add message if server sent us it
+            elif isinstance(message, RoutedPublicMessage):
                 new_msg = Msg(message.text, True)
                 self.messages = [*self.messages, new_msg]
 
@@ -219,7 +215,6 @@ class ChatClient:
 if __name__ == "__main__":
     import sys
 
-    import sys
 
     username = sys.argv[1] if len(sys.argv) > 1 else "alice"
     private_key_path = sys.argv[2] if len(

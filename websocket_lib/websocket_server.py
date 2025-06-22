@@ -90,5 +90,3 @@ if __name__ == "__main__":
     print('server starting at ' + server.host + ':' + str(server.port) )
 
     server.start()
-
-#TODO - debug _on_connection func + try to implement a ping system on server

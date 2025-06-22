@@ -68,14 +68,3 @@ if __name__ == "__main__":
 
     input_reader(client)
 
-
-    # def on_message(message):
-    #     print(message)
-    #
-    # client.send_text("hello")
-    # client.send_text("world")
-
-    # threading.Thread(target=input_reader, args=(client,), daemon=True).start()
-
-    # while client.state != WebSocketState.CLOSED:
-    #     pass
