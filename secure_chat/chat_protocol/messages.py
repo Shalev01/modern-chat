@@ -87,21 +87,3 @@ class RemoveUserMessage(BaseSecureChatMessage):
 class ErrorMessage(BaseSecureChatMessage):
     text: str
     ref_message_id: str | None = None
-
-
-ClientToServerMessages = [
-    JoinMessage,
-    LeaveMessage,
-    PublicMessage,
-    PrivateMessage,
-    ErrorMessage
-]
-
-ServerToClientMessages  =  [
-    WelcomeMessage,
-    AddUserMessage,
-    RemoveUserMessage,
-    RoutedPublicMessage,
-    RoutedPrivateMessage,
-    ErrorMessage
-]
