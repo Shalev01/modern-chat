@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b883711e-2d3a-43ab-bf48-972a1d184415" name="Changes" comment="changed location of client.py and server.py to the secure_chat folder">
+    <list default="true" id="b883711e-2d3a-43ab-bf48-972a1d184415" name="Changes" comment="gui was added">
+      <change afterPath="$PROJECT_DIR$/secure_chat/gui_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_protocol/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/chat_protocol/messages.py" beforeDir="false" afterPath="$PROJECT_DIR$/secure_chat/chat_protocol/messages.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_chat/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/secure_chat/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +33,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Shalev01/modern-chat.git&quot;,
-    &quot;accountId&quot;: &quot;0bfee4bd-febd-4177-94b1-c127c03bfdcb&quot;
+    &quot;accountId&quot;: &quot;0e570776-7945-4bdf-9d30-c0b1863b9425&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -57,21 +55,24 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.async_client.executor": "Run",
     "Python.async_server.executor": "Run",
-    "Python.client.executor": "Run",
+    "Python.client.executor": "Debug",
+    "Python.gui_client.executor": "Run",
     "Python.new_chat_server.executor": "Run",
+    "Python.protocol.executor": "Debug",
     "Python.server.executor": "Run",
     "Python.websocket.executor": "Run",
     "Python.websocket_client.executor": "Run",
     "Python.websocket_server.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "dani",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/User/PycharmProjects/modern-chat",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -84,7 +85,6 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
         <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
       </set>
     </attachedChunks>
@@ -153,7 +153,8 @@
     <MESSAGE value="created a threaded server, addes a _close_ option for client + some fixes" />
     <MESSAGE value="removed - init + async files. removed areas with # with unnecessary code" />
     <MESSAGE value="changed location of client.py and server.py to the secure_chat folder" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed location of client.py and server.py to the secure_chat folder" />
+    <MESSAGE value="gui was added" />
+    <option name="LAST_COMMIT_MESSAGE" value="gui was added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
